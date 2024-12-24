@@ -8,7 +8,7 @@ import io.ktor.client.plugins.websocket.webSocketSession
 import io.ktor.client.request.url
 import io.ktor.websocket.Frame
 import com.project.goldfish.logEvent
-
+import com.project.goldfish.serverName
 import io.ktor.websocket.WebSocketSession
 import io.ktor.websocket.close
 import io.ktor.websocket.readText
@@ -28,7 +28,7 @@ class ChatSocketServiceImpl(
     override suspend fun initSession(username: String): Resource<Unit> {
         return try {
             socket = client.webSocketSession {
-                url(urlString = "ws://10.0.2.2:8080/chat-socket?username=$username")
+                url(urlString = "ws://${serverName}:8080/chat-socket?username=$username")
             }
             if(socket?.isActive == true) {
                 logEvent("ACTIVE SOCKET")

@@ -17,7 +17,7 @@ interface ChatSocketService {
 
 
     companion object {
-        const val BASE_URL = "ws://10.0.2.2:8080"
+        const val BASE_URL = "ws://0.0.0.0:8080"
     }
 
     sealed class Endpoints(val url: String) {
