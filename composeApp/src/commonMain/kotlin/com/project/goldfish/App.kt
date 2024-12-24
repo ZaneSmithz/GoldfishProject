@@ -1,22 +1,39 @@
 package com.project.goldfish
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.project.goldfish.screen.ChatScreen
+import com.project.goldfish.screen.UsernameScreen
+import org.koin.compose.KoinContext
 
 @Composable
-@Preview
 fun App() {
     MaterialTheme {
-        Box(modifier = Modifier
-            .fillMaxSize(),
-            contentAlignment = Alignment.Center) {
-            Text(text = "Hello World!")
+        KoinContext {
+            val navController = rememberNavController()
+            NavHost(
+                navController = navController,
+                startDestination = "username_screen"
+            ) {
+                composable("username_screen") {
+                    UsernameScreen(onNavigate = navController::navigate)
+                }
+                composable("chat_screen/{username}",
+                    arguments = listOf(
+                        navArgument(name = "username") {
+                            type = NavType.StringType
+                            nullable = true
+                        }
+                    )) {
+                    val username = it.arguments?.getString("username")
+                    ChatScreen(username = username)
+                }
+            }
         }
     }
 }
