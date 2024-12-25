@@ -1,13 +1,13 @@
-package com.project.goldfish.network
+package com.project.goldfish.network.socket
 
 import com.project.goldfish.data.MessageDto
 import com.project.goldfish.domain.Message
+import com.project.goldfish.network.messages.ParticipantsRequest
 import com.project.goldfish.util.Resource
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.webSocketSession
 import io.ktor.client.request.url
 import io.ktor.websocket.Frame
-import com.project.goldfish.logEvent
 import com.project.goldfish.serverName
 import io.ktor.websocket.WebSocketSession
 import io.ktor.websocket.close
@@ -25,24 +25,19 @@ class ChatSocketServiceImpl(
 ): ChatSocketService {
     private var socket: WebSocketSession? = null
 
-    override suspend fun initSession(username: String): Resource<Unit> {
+    override suspend fun initSession(chatId: String, userId: String): Resource<Unit> {
         return try {
             socket = client.webSocketSession {
-                url(urlString = "ws://${serverName}:8080/chat-socket?username=$username")
+                url(urlString = "ws://${serverName}:8080/chat-room?chatId=$chatId&userId=$userId")
             }
             if(socket?.isActive == true) {
-                logEvent("ACTIVE SOCKET")
                 Resource.Success(Unit)
             }
             else {
-                logEvent("COULDNT ESTABLUSH CONNECTION!")
-
                 Resource.Error("Couldn't establish a connection")
             }
 
         } catch (e: Exception) {
-            logEvent("UNKNOWN EXCEPTION INIT SESSION")
-
             e.printStackTrace()
             Resource.Error(message = e.message ?: "Unknown error")
         }
@@ -50,26 +45,20 @@ class ChatSocketServiceImpl(
 
     override suspend fun sendMessage(message: String) {
        try {
-           logEvent("TRY SEND!")
            socket?.send(Frame.Text(message))
        } catch (e: Exception) {
-           logEvent("NO CONNECTION!")
-
            e.printStackTrace()
        }
     }
 
     override fun observeMessages(): Flow<Message> {
         return try {
-            logEvent("OBSERVING MESSAGES")
             socket?.incoming?.receiveAsFlow()?.filter { it is Frame.Text }?.map {
                 val json = (it as? Frame.Text)?.readText() ?: ""
                 val messageDto = Json.decodeFromString<MessageDto>(json)
                 messageDto.toMessage()
             } ?: flow {  }
         } catch (e: Exception) {
-            logEvent("NO CONNECTION WHEN OBSERVING!")
-
             e.printStackTrace()
             flow {  }
         }

@@ -30,30 +30,52 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.project.goldfish.domain.ChatState
 import com.project.goldfish.logEvent
+import com.project.goldfish.screen.ChatEvent.OnSendMessage
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ChatScreen(
-    username: String?,
+internal fun ChatRoute(
+    userId: String?,
+    participant: String?,
     viewModel: ChatViewModel = koinViewModel()
 ) {
     LaunchedEffect(key1 = true) {
-        viewModel.connectToChat()
+        viewModel.onEvent(ChatEvent.OnConnect)
         viewModel.toastEvent.collectLatest { message ->
             logEvent(message)
         }
     }
 
     val state by viewModel.state.collectAsState()
+    val messageText by viewModel.messageText
+
+    ChatScreen(
+        userId = userId,
+        onEvent = viewModel::onEvent,
+        state = state,
+        messageText = messageText
+    )
+
+}
+@Composable
+private fun ChatScreen(
+    userId: String?,
+    onEvent: (ChatEvent) -> Unit,
+    messageText: String,
+    state: ChatState
+) {
+
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth(), reverseLayout = true) {
             item {
                 Spacer(modifier = Modifier.height(32.dp))
             }
             items(state.messages) { message ->
-                val isOwnMessage = message.username == username
+                logEvent(message.userId + "==" + userId)
+                val isOwnMessage = message.userId == userId
                 Box(
                     contentAlignment = if (isOwnMessage) Alignment.CenterEnd
                     else Alignment.CenterStart,
@@ -91,7 +113,7 @@ fun ChatScreen(
                             ).padding(8.dp)
                     ) {
                         Text(
-                            text = message.username,
+                            text = message.userId,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
@@ -113,14 +135,14 @@ fun ChatScreen(
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
-            TextField(value = viewModel.messageText.value,
-                onValueChange = viewModel::onMessageChange,
+            TextField(value = messageText,
+                onValueChange = {text -> onEvent(ChatEvent.OnMessageChange(text))},
                 placeholder = {
                     Text(text = "Enter a message")
                 },
                 modifier = Modifier.weight(1f)
             )
-            IconButton(onClick = viewModel::sendMessage) {
+            IconButton(onClick = { onEvent(OnSendMessage) }) {
                 Icon(imageVector = Icons.Default.Send, contentDescription = "Send")
             }
         }

@@ -8,9 +8,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MessageDto(
+    val chatId: String,
+    val userId: String,
     val text: String,
     val timestamp: Long,
-    val username: String,
     val id: String
 ) {
     fun toMessage(): Message {
@@ -20,7 +21,7 @@ data class MessageDto(
         return Message(
             text = text,
             formattedTime = localDate,
-            username = username
+            userId = userId
         )
     }
 }

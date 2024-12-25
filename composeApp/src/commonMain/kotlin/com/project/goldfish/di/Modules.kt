@@ -1,9 +1,11 @@
 package com.project.goldfish.di
 
-import com.project.goldfish.network.ChatSocketService
-import com.project.goldfish.network.ChatSocketServiceImpl
-import com.project.goldfish.network.MessageService
-import com.project.goldfish.network.MessageServiceImpl
+import com.project.goldfish.network.socket.ChatSocketService
+import com.project.goldfish.network.socket.ChatSocketServiceImpl
+import com.project.goldfish.network.messages.MessageService
+import com.project.goldfish.network.messages.MessageServiceImpl
+import com.project.goldfish.network.rooms.ChatRoomService
+import com.project.goldfish.network.rooms.ChatRoomServiceImpl
 import com.project.goldfish.screen.ChatViewModel
 import com.project.goldfish.screen.UsernameViewModel
 import io.ktor.client.HttpClient
@@ -29,4 +31,5 @@ val sharedModule = module {
     }
     singleOf(::ChatSocketServiceImpl).bind<ChatSocketService>()
     singleOf(::MessageServiceImpl).bind<MessageService>()
+    singleOf(::ChatRoomServiceImpl).bind<ChatRoomService>()
 }

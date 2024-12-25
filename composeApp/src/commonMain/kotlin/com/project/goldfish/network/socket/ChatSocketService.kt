@@ -1,13 +1,11 @@
-package com.project.goldfish.network
+package com.project.goldfish.network.socket
 
 import com.project.goldfish.domain.Message
 import com.project.goldfish.util.Resource
 import kotlinx.coroutines.flow.Flow
 
 interface ChatSocketService {
-    suspend fun initSession(
-        username: String,
-    ): Resource<Unit>
+    suspend fun initSession(chatId: String, userId: String): Resource<Unit>
 
     suspend fun sendMessage(message: String)
 

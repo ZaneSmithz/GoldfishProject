@@ -1,13 +1,13 @@
-package com.project.goldfish.network
+package com.project.goldfish.network.messages
 
 import com.project.goldfish.domain.Message
 import com.project.goldfish.serverName
 
 interface MessageService {
-    suspend fun getAllMessages(): List<Message>
+    suspend fun getAllMessages(chatRoomId: String): List<Message>
 
     companion object {
-        val BASE_URL = "https://$serverName:8080"
+        val BASE_URL = "http://$serverName:8080"
     }
 
     sealed class Endpoints(val url: String) {

@@ -13,23 +13,37 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.project.goldfish.logEvent
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun UsernameScreen(
-    viewModel: UsernameViewModel = koinViewModel(),
-    onNavigate: (String) -> Unit
+internal fun UsernameRoute(
+    onNavigate: (String) -> Unit,
+    viewModel: UsernameViewModel = koinViewModel()
 ) {
     LaunchedEffect(key1 = true) {
-        viewModel.onJoinChat.collectLatest { username ->
-            onNavigate("chat_screen/$username")
+        viewModel.onJoinChat.collectLatest { request ->
+            logEvent(request.username + " " + request.participant)
+            onNavigate("chat_screen/${request.username}/${request.participant}")
         }
     }
-
+    val state by viewModel.state.collectAsState()
+    UsernameScreen(
+        onEvent = viewModel::onEvent,
+        state = state
+    )
+}
+@Composable
+private fun UsernameScreen(
+    state: UsernameState,
+    onEvent: (UsernameEvent) -> Unit,
+) {
     Box(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         contentAlignment = Alignment.Center
@@ -40,18 +54,29 @@ fun UsernameScreen(
             horizontalAlignment = Alignment.End
         ) {
             TextField(
-                value = viewModel.usernameText.value,
-                onValueChange = viewModel::onUsernameChange,
+                value = state.username,
+                onValueChange = { text -> onEvent(UsernameEvent.OnUsernameChange(text)) },
                 placeholder = {
-                    Text(text = "Enter a username...")
+                    Text(text = "Enter a username id...")
                 },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(Modifier.height(8.dp))
-            Button(onClick = viewModel::onJoinClick) {
+
+            TextField(
+                value = state.participant,
+                onValueChange = { text -> onEvent(UsernameEvent.OnParticipantChange(text)) },
+                placeholder = {
+                    Text(text = "Enter a participant id...")
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            Button(onClick = {onEvent(UsernameEvent.OnJoinClick) }) {
                 Text(text = "Join")
             }
         }
-
     }
 }
