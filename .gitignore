@@ -10,6 +10,7 @@ local.properties
 captures
 .externalNativeBuild
 .cxx
+.google-services.json
 *.xcodeproj/*
 !*.xcodeproj/project.pbxproj
 !*.xcodeproj/xcshareddata/

@@ -1,26 +1,30 @@
-package com.project.goldfish.screen
+package com.project.goldfish.screen.lobby
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.project.goldfish.SessionManager
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class UsernameViewModel: ViewModel() {
+class UsernameViewModel(
+    sessionManager: SessionManager
+): ViewModel() {
     private val _onJoinChat = MutableSharedFlow<UsernameState>()
     val onJoinChat = _onJoinChat.asSharedFlow()
 
     private val _state = MutableStateFlow(UsernameState())
     val state = _state.asStateFlow()
 
+    init {
+        sessionManager.state.value.user?.let {
+            _state.value = _state.value.copy(username = it.id.toString())
+        }
+    }
     fun onEvent(usernameEvent: UsernameEvent) {
         when (usernameEvent) {
-            is UsernameEvent.OnUsernameChange -> {
-                _state.value = _state.value.copy(username = usernameEvent.username)
-            }
-
             is UsernameEvent.OnParticipantChange -> {
                 _state.value = _state.value.copy(participant = usernameEvent.participant)
             }
@@ -29,7 +33,7 @@ class UsernameViewModel: ViewModel() {
         }
     }
 
-    fun onJoinClick() {
+    private fun onJoinClick() {
         viewModelScope.launch {
             if(_state.value.username.isNotBlank() && _state.value.participant.isNotBlank()) {
                 _onJoinChat.emit(_state.value)
@@ -43,8 +47,7 @@ data class UsernameState(
     val participant: String = ""
 )
 
-sealed class UsernameEvent {
-    data class OnUsernameChange(val username: String): UsernameEvent()
-    data class OnParticipantChange(val participant: String): UsernameEvent()
-    data object OnJoinClick: UsernameEvent()
+sealed interface UsernameEvent {
+    data class OnParticipantChange(val participant: String): UsernameEvent
+    data object OnJoinClick: UsernameEvent
 }

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "271280694696",
+    "project_id": "goldfish-e0da2",
+    "storage_bucket": "goldfish-e0da2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:271280694696:android:1c8de94399f59ada3e299d",
+        "android_client_info": {
+          "package_name": "com.project.goldfish"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "271280694696-73fcfth7i7siugb2ktflnb82bq8pqtqa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTXu1ccqa1KQyq2rSiJcMU4YUf5nqOlbw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "271280694696-73fcfth7i7siugb2ktflnb82bq8pqtqa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

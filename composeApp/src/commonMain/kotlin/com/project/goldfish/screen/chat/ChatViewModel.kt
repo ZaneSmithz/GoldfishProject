@@ -1,4 +1,4 @@
-package com.project.goldfish.screen
+package com.project.goldfish.screen.chat
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf

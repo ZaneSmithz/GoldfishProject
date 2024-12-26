@@ -1,4 +1,4 @@
-package com.project.goldfish.screen
+package com.project.goldfish.screen.lobby
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,8 +29,10 @@ internal fun UsernameRoute(
 ) {
     LaunchedEffect(key1 = true) {
         viewModel.onJoinChat.collectLatest { request ->
-            logEvent(request.username + " " + request.participant)
-            onNavigate("chat_screen/${request.username}/${request.participant}")
+            if(request.username.isNotBlank() && request.participant.isNotBlank()) {
+                logEvent(request.username + " " + request.participant)
+                onNavigate("chat_screen/${request.username}/${request.participant}")
+            }
         }
     }
     val state by viewModel.state.collectAsState()
@@ -53,16 +55,6 @@ private fun UsernameScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.End
         ) {
-            TextField(
-                value = state.username,
-                onValueChange = { text -> onEvent(UsernameEvent.OnUsernameChange(text)) },
-                placeholder = {
-                    Text(text = "Enter a username id...")
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(8.dp))
-
             TextField(
                 value = state.participant,
                 onValueChange = { text -> onEvent(UsernameEvent.OnParticipantChange(text)) },

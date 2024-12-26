@@ -1,4 +1,4 @@
-package com.project.goldfish.screen
+package com.project.goldfish.screen.chat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -31,15 +31,15 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.project.goldfish.domain.ChatState
+import com.project.goldfish.domain.Message.Companion.formattedTime
 import com.project.goldfish.logEvent
-import com.project.goldfish.screen.ChatEvent.OnSendMessage
+import com.project.goldfish.screen.chat.ChatEvent.OnSendMessage
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 internal fun ChatRoute(
     userId: String?,
-    participant: String?,
     viewModel: ChatViewModel = koinViewModel()
 ) {
     LaunchedEffect(key1 = true) {
@@ -74,7 +74,6 @@ private fun ChatScreen(
                 Spacer(modifier = Modifier.height(32.dp))
             }
             items(state.messages) { message ->
-                logEvent(message.userId + "==" + userId)
                 val isOwnMessage = message.userId == userId
                 Box(
                     contentAlignment = if (isOwnMessage) Alignment.CenterEnd
@@ -105,10 +104,10 @@ private fun ChatScreen(
                                 }
                                 drawPath(
                                     path = trianglePath,
-                                    color = if (isOwnMessage) Color.Green else Color.DarkGray
+                                    color = if (isOwnMessage) Color.Blue else Color.DarkGray
                                 )
                             }.background(
-                                color = if (isOwnMessage) Color.Green else Color.DarkGray,
+                                color = if (isOwnMessage) Color.Blue else Color.DarkGray,
                                 shape = RoundedCornerShape(10.dp)
                             ).padding(8.dp)
                     ) {
@@ -117,19 +116,18 @@ private fun ChatScreen(
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
-
                         Text(
                             text = message.text,
                             color = Color.White
                         )
                         Text(
-                            text = message.formattedTime.toString(),
+                            text = message.formattedTime.formattedTime(),
                             color = Color.White,
                             modifier = Modifier.align(Alignment.End)
                         )
-
                     }
                 }
+                Spacer(modifier = Modifier.height(32.dp))
             }
         }
         Row(

@@ -7,8 +7,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.project.goldfish.screen.ChatRoute
-import com.project.goldfish.screen.UsernameRoute
+import com.project.goldfish.screen.chat.ChatRoute
+import com.project.goldfish.screen.lobby.UsernameRoute
+import com.project.goldfish.screen.login.LoginRoute
 import org.koin.compose.KoinContext
 
 @Composable
@@ -18,8 +19,14 @@ fun App() {
             val navController = rememberNavController()
             NavHost(
                 navController = navController,
-                startDestination = "username_screen"
+                startDestination = "login_screen"
             ) {
+                composable("login_screen") {
+                    LoginRoute(onNavigate = navController::navigate)
+                }
+                composable("login_screen") {
+                    LoginRoute(onNavigate = navController::navigate)
+                }
                 composable("username_screen") {
                     UsernameRoute(onNavigate = navController::navigate)
                 }
@@ -35,8 +42,7 @@ fun App() {
                         }
                     )) {
                     val username = it.arguments?.getString("userId")
-                    val participant = it.arguments?.getString("participantId")
-                    ChatRoute(userId = username, participant = participant)
+                    ChatRoute(userId = username)
                 }
             }
         }
