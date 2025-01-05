@@ -5,13 +5,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.project.goldfish.domain.ChatState
+import com.project.goldfish.SessionManager
+import com.project.goldfish.model.state.ChatState
 import com.project.goldfish.logEvent
-import com.project.goldfish.network.socket.ChatSocketService
-import com.project.goldfish.network.messages.MessageService
+import com.project.goldfish.model.event.ChatEvent
+import com.project.goldfish.network.socket.ChatSocketRepository
+import com.project.goldfish.network.messages.MessageRepository
 import com.project.goldfish.network.messages.ParticipantsRequest
-import com.project.goldfish.network.rooms.ChatRoomService
-import com.project.goldfish.util.Resource
+import com.project.goldfish.network.rooms.ChatRoomRepository
+import com.project.goldfish.util.GFResult
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,17 +24,11 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 
-sealed interface ChatEvent {
-    data object OnSendMessage : ChatEvent
-    data object OnDisconnect : ChatEvent
-    data object OnConnect : ChatEvent
-    data class OnMessageChange(val message: String) : ChatEvent
-}
-
 class ChatViewModel(
-    private val messageService: MessageService,
-    private val chatSocketService: ChatSocketService,
-    private val chatRoomService: ChatRoomService,
+    private val messageService: MessageRepository,
+    private val chatSocketService: ChatSocketRepository,
+    private val chatRoomService: ChatRoomRepository,
+    private val sessionManager: SessionManager,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private var _messageText = mutableStateOf("")
@@ -47,11 +43,14 @@ class ChatViewModel(
     fun onEvent(chatEvent: ChatEvent) {
         when (chatEvent) {
             is ChatEvent.OnConnect -> {
+                _state.value = state.value.copy(
+                    isLoading = true,
+                    username = sessionManager.state.value.user?.username ?: "User"
+                )
                 val userId = savedStateHandle.get<String>("userId")
                 val participantId = savedStateHandle.get<String>("participantId")
                 logEvent("userId: $userId, participantId: $participantId")
-
-                if(userId != null && participantId != null) {
+                if (userId != null && participantId != null) {
                     val participantsRequest = ParticipantsRequest(listOf(userId, participantId))
                     getChatRoom(participantsRequest)
                 }
@@ -63,12 +62,12 @@ class ChatViewModel(
         }
     }
 
-   private suspend fun connectToChat(chatId: String, userId: String) {
+    private suspend fun connectToChat(chatId: String, userId: String) {
         when (val result = chatSocketService.initSession(
             chatId = chatId,
             userId = userId
         )) {
-            is Resource.Success -> {
+            is GFResult.Success -> {
                 chatSocketService.observeMessages().onEach { message ->
                     val newList = state.value.messages.toMutableList().apply {
                         add(0, message)
@@ -77,8 +76,9 @@ class ChatViewModel(
                 }.launchIn(viewModelScope)
             }
 
-            is Resource.Error -> {
-                _toastEvent.emit(result.message ?: "Unknown error")
+            is GFResult.Error -> {
+                // emit message
+                _toastEvent.emit("Unknown error")
             }
         }
     }
@@ -91,24 +91,32 @@ class ChatViewModel(
 
     private suspend fun getAllMessages(chatRoomId: String) {
         _state.value = state.value.copy(isLoading = true)
-        _state.value = state.value.copy(
-            messages = messageService.getAllMessages(chatRoomId),
-            isLoading = false
-        )
+        when (val result = messageService.getAllMessages(chatRoomId)) {
+            is GFResult.Error -> {
+                _state.value = _state.value.copy(
+                    isLoading = false,
+                    // has error!
+                )
+            }
+
+            is GFResult.Success -> {
+                _state.value = state.value.copy(
+                    messages = result.data,
+                    isLoading = false
+                )
+            }
+        }
     }
 
     private fun getChatRoom(participants: ParticipantsRequest) {
         viewModelScope.launch {
             when (val result = chatRoomService.getOrCreateChatRoom(participants)) {
-                is Resource.Success -> {
-                    result.data?.chatId?.let { chatId ->
-                        logEvent(chatId)
-                        getAllMessages(chatId)
-                        connectToChat(chatId, participants.participants[0])
-                    }
+                is GFResult.Success -> {
+                    logEvent(result.data.chatId)
+                    getAllMessages(result.data.chatId)
+                    connectToChat(result.data.chatId, participants.participants[0])
                 }
-
-                is Resource.Error -> {
+                is GFResult.Error -> {
                     logEvent("Failed to get chat room")
                 }
             }

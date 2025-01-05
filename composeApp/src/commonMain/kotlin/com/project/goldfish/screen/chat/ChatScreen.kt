@@ -30,10 +30,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.project.goldfish.domain.ChatState
-import com.project.goldfish.domain.Message.Companion.formattedTime
+import com.project.goldfish.model.state.ChatState
+import com.project.goldfish.model.MessageData.Companion.formattedTime
 import com.project.goldfish.logEvent
-import com.project.goldfish.screen.chat.ChatEvent.OnSendMessage
+import com.project.goldfish.model.event.ChatEvent
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -112,7 +112,7 @@ private fun ChatScreen(
                             ).padding(8.dp)
                     ) {
                         Text(
-                            text = message.userId,
+                            text = if(isOwnMessage) state.username else message.userId,
                             fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
@@ -140,7 +140,7 @@ private fun ChatScreen(
                 },
                 modifier = Modifier.weight(1f)
             )
-            IconButton(onClick = { onEvent(OnSendMessage) }) {
+            IconButton(onClick = { onEvent(ChatEvent.OnSendMessage) }) {
                 Icon(imageVector = Icons.Default.Send, contentDescription = "Send")
             }
         }

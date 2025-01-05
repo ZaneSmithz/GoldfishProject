@@ -2,17 +2,40 @@ package com.project.goldfish.di
 
 import com.project.goldfish.SessionManager
 import com.project.goldfish.SessionManagerImpl
-import com.project.goldfish.network.auth.LoginService
-import com.project.goldfish.network.auth.LoginServiceImpl
-import com.project.goldfish.network.socket.ChatSocketService
-import com.project.goldfish.network.socket.ChatSocketServiceImpl
-import com.project.goldfish.network.messages.MessageService
-import com.project.goldfish.network.messages.MessageServiceImpl
-import com.project.goldfish.network.rooms.ChatRoomService
-import com.project.goldfish.network.rooms.ChatRoomServiceImpl
+import com.project.goldfish.domain.messages.GetAllMessagesUseCase
+import com.project.goldfish.domain.messages.GetAllMessagesUseCaseImpl
+import com.project.goldfish.domain.room.RetrieveChatRoomUseCase
+import com.project.goldfish.domain.room.RetrieveChatRoomUseCaseImpl
+import com.project.goldfish.domain.search.SearchUserUseCase
+import com.project.goldfish.domain.search.SearchUserUseCaseImpl
+import com.project.goldfish.domain.friends.AcceptFriendUseCase
+import com.project.goldfish.domain.friends.AcceptFriendUseCaseImpl
+import com.project.goldfish.domain.friends.AddFriendUseCase
+import com.project.goldfish.domain.friends.AddFriendUseCaseImpl
+import com.project.goldfish.domain.friends.RetrieveFriendsUseCase
+import com.project.goldfish.domain.friends.RetrieveFriendsUseCaseImpl
+import com.project.goldfish.domain.friends.RetrieveRequestedFriendsUseCase
+import com.project.goldfish.domain.friends.RetrieveRequestedFriendsUseCaseImpl
+import com.project.goldfish.domain.login.AddUserUseCase
+import com.project.goldfish.domain.login.AddUserUseCaseImpl
+import com.project.goldfish.domain.login.RetrieveUserUseCase
+import com.project.goldfish.domain.login.RetrieveUserUseCaseImpl
+import com.project.goldfish.network.auth.LoginRepository
+import com.project.goldfish.network.auth.LoginRepositoryImpl
+import com.project.goldfish.network.friends.FriendRepository
+import com.project.goldfish.network.friends.FriendRepositoryImpl
+import com.project.goldfish.network.socket.ChatSocketRepository
+import com.project.goldfish.network.socket.ChatSocketRepositoryImpl
+import com.project.goldfish.network.messages.MessageRepository
+import com.project.goldfish.network.messages.MessageRepositoryImpl
+import com.project.goldfish.network.rooms.ChatRoomRepository
+import com.project.goldfish.network.rooms.ChatRoomRepositoryImpl
+import com.project.goldfish.network.search.SearchRepository
+import com.project.goldfish.network.search.SearchRepositoryImpl
 import com.project.goldfish.screen.chat.ChatViewModel
-import com.project.goldfish.screen.lobby.UsernameViewModel
+import com.project.goldfish.screen.lobby.LobbyViewModel
 import com.project.goldfish.screen.login.LoginViewModel
+import com.project.goldfish.screen.registration.RegistrationViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -24,9 +47,10 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val sharedModule = module {
-    viewModelOf(::UsernameViewModel)
+    viewModelOf(::LobbyViewModel)
     viewModelOf(::ChatViewModel)
     viewModelOf(::LoginViewModel)
+    viewModelOf(::RegistrationViewModel)
     single {
         HttpClient(CIO) {
             install(WebSockets)
@@ -35,9 +59,20 @@ val sharedModule = module {
             }
         }
     }
-    singleOf(::LoginServiceImpl).bind<LoginService>()
-    singleOf(::ChatSocketServiceImpl).bind<ChatSocketService>()
-    singleOf(::MessageServiceImpl).bind<MessageService>()
-    singleOf(::ChatRoomServiceImpl).bind<ChatRoomService>()
+    singleOf(::LoginRepositoryImpl).bind<LoginRepository>()
+    singleOf(::ChatSocketRepositoryImpl).bind<ChatSocketRepository>()
+    singleOf(::MessageRepositoryImpl).bind<MessageRepository>()
+    singleOf(::ChatRoomRepositoryImpl).bind<ChatRoomRepository>()
     singleOf(::SessionManagerImpl).bind<SessionManager>()
+    singleOf(::FriendRepositoryImpl).bind<FriendRepository>()
+    singleOf(::SearchRepositoryImpl).bind<SearchRepository>()
+    singleOf(::AcceptFriendUseCaseImpl).bind<AcceptFriendUseCase>()
+    singleOf(::RetrieveFriendsUseCaseImpl).bind<RetrieveFriendsUseCase>()
+    singleOf(::RetrieveRequestedFriendsUseCaseImpl).bind<RetrieveRequestedFriendsUseCase>()
+    singleOf(::AddFriendUseCaseImpl).bind<AddFriendUseCase>()
+    singleOf(::GetAllMessagesUseCaseImpl).bind<GetAllMessagesUseCase>()
+    singleOf(::RetrieveChatRoomUseCaseImpl).bind<RetrieveChatRoomUseCase>()
+    singleOf(::SearchUserUseCaseImpl).bind<SearchUserUseCase>()
+    singleOf(::AddUserUseCaseImpl).bind<AddUserUseCase>()
+    singleOf(::RetrieveUserUseCaseImpl).bind<RetrieveUserUseCase>()
 }

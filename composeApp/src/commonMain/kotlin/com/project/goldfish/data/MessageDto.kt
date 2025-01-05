@@ -1,6 +1,6 @@
 package com.project.goldfish.data
 
-import com.project.goldfish.domain.Message
+import com.project.goldfish.model.MessageData
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -14,11 +14,11 @@ data class MessageDto(
     val timestamp: Long,
     val id: String
 ) {
-    fun toMessage(): Message {
+    fun toMessage(): MessageData {
         val instant = Instant.fromEpochMilliseconds(timestamp)
         val localDate = instant.toLocalDateTime(TimeZone.currentSystemDefault())
 
-        return Message(
+        return MessageData(
             text = text,
             formattedTime = localDate,
             userId = userId

@@ -61,12 +61,19 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
             implementation(libs.gitlive.firebase.auth)
+            implementation(compose.components.resources)
 
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
     }
+}
+
+compose.resources {
+    publicResClass = false
+    packageOfResClass = "com.project.goldfish.resources"
+    generateResClass = auto
 }
 
 android {

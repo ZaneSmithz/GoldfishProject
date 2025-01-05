@@ -1,0 +1,5 @@
+<resources>
+    <string name="server_error">Oops, something went wrong. Please try again.</string>
+    <string name="unknown_error">An unknown error occurred</string>
+    <string name="conflict_error">Item already exists</string>
+</resources>

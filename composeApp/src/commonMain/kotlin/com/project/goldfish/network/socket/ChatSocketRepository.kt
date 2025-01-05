@@ -1,15 +1,16 @@
 package com.project.goldfish.network.socket
 
-import com.project.goldfish.domain.Message
-import com.project.goldfish.util.Resource
+import com.project.goldfish.model.MessageData
+import com.project.goldfish.util.DataError
+import com.project.goldfish.util.GFResult
 import kotlinx.coroutines.flow.Flow
 
-interface ChatSocketService {
-    suspend fun initSession(chatId: String, userId: String): Resource<Unit>
+interface ChatSocketRepository {
+    suspend fun initSession(chatId: String, userId: String): GFResult<Unit, DataError.Network>
 
     suspend fun sendMessage(message: String)
 
-    fun observeMessages(): Flow<Message>
+    fun observeMessages(): Flow<MessageData>
 
     suspend fun closeSession()
 

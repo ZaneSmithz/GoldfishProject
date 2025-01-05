@@ -8,8 +8,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.project.goldfish.screen.chat.ChatRoute
-import com.project.goldfish.screen.lobby.UsernameRoute
+import com.project.goldfish.screen.lobby.LobbyRoute
 import com.project.goldfish.screen.login.LoginRoute
+import com.project.goldfish.screen.registration.RegistrationScreen
 import org.koin.compose.KoinContext
 
 @Composable
@@ -24,11 +25,11 @@ fun App() {
                 composable("login_screen") {
                     LoginRoute(onNavigate = navController::navigate)
                 }
-                composable("login_screen") {
-                    LoginRoute(onNavigate = navController::navigate)
+                composable("register_screen") {
+                    RegistrationScreen(onNavigate = navController::navigate)
                 }
                 composable("username_screen") {
-                    UsernameRoute(onNavigate = navController::navigate)
+                    LobbyRoute(onNavigate = navController::navigate)
                 }
                 composable("chat_screen/{userId}/{participantId}",
                     arguments = listOf(

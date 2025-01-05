@@ -3,10 +3,11 @@ package com.project.goldfish.network.rooms
 import com.project.goldfish.data.ChatRoomDto
 import com.project.goldfish.network.messages.ParticipantsRequest
 import com.project.goldfish.serverName
-import com.project.goldfish.util.Resource
+import com.project.goldfish.util.DataError
+import com.project.goldfish.util.GFResult
 
-interface ChatRoomService {
-    suspend fun getOrCreateChatRoom(participantsRequest: ParticipantsRequest): Resource<ChatRoomDto>
+interface ChatRoomRepository {
+    suspend fun getOrCreateChatRoom(participantsRequest: ParticipantsRequest): GFResult<ChatRoomDto, DataError.Network>
 
     companion object {
         val BASE_URL = "http://$serverName:8080"

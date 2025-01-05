@@ -3,16 +3,16 @@ package com.project.goldfish.screen.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.project.goldfish.SessionManager
+import com.project.goldfish.domain.login.RetrieveUserUseCase
 import com.project.goldfish.logEvent
-import com.project.goldfish.network.auth.LoginService
-import com.project.goldfish.screen.lobby.UsernameState
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import com.project.goldfish.model.event.LoginEvent
+import com.project.goldfish.network.auth.LoginRepository
+import com.project.goldfish.util.GFResult
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val loginService: LoginService,
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private val retrieveUserUseCase: RetrieveUserUseCase
 ): ViewModel() {
     val sessionState = sessionManager.state
 
@@ -24,18 +24,17 @@ class LoginViewModel(
         }
     }
 
-   private fun onLoginClick(firebaseUid: String) {
+   private fun onLoginClick(token: String) {
         viewModelScope.launch {
-            val user = loginService.retrieveUser(firebaseUid)
-            logEvent("USER = $user")
-            user?.let {
-                sessionManager.updateSession(user)
-            }
+           when(val result = retrieveUserUseCase.invoke(token)) {
+               is GFResult.Error -> Unit // error handling
+               is GFResult.Success -> {
+                   logEvent("USER = ${result.data}")
+                   result.data?.let { user ->
+                       sessionManager.updateSession(user, token)
+                   }
+               }
+           }
         }
     }
-}
-
-
-sealed interface LoginEvent {
-    data class OnLoginClick(val firebaseUid: String): LoginEvent
 }

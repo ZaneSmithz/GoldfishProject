@@ -1,11 +1,11 @@
-package com.project.goldfish.domain
+package com.project.goldfish.model
 
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
 
-data class Message(
+data class MessageData(
     val text: String,
     val formattedTime: LocalDateTime,
     val userId: String,
