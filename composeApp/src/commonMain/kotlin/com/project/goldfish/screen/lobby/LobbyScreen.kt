@@ -93,10 +93,23 @@ private fun LobbyScreen(
                 }
 
             }
-
             Spacer(Modifier.height(8.dp))
         }
         LazyColumn {
+            item {
+                Text(text = "Current Match!", color = Color.Red, fontSize = 16.sp)
+                Spacer(Modifier.height(8.dp))
+            }
+            item {
+                Row(modifier = Modifier.fillMaxWidth().height(50.dp).clip(
+                    RoundedCornerShape(9.dp)).background(Color.Red) .clickable {
+                    onEvent(LobbyEvent.OnJoinClick(state.matchedUser?.id.toString()))
+                },
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                    Text(text = state.matchedUser?.username ?: "Error!", color = Color.White, fontWeight = FontWeight.Bold)
+                }
+                Spacer(Modifier.height(8.dp))
+            }
             item {
                 Text(text = "Friends", color = Color.Red, fontSize = 16.sp)
                 Spacer(Modifier.height(8.dp))

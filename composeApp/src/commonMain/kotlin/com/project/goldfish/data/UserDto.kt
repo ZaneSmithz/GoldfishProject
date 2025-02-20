@@ -7,5 +7,6 @@ data class UserDto(
     val id : Int,
     val username: String,
     val firebaseUid: String,
-    val profilePic: String?
+    val profilePic: String?,
+    val lastUserInteraction: Long? = null
 )

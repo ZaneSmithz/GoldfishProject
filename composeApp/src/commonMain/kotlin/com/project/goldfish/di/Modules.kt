@@ -20,10 +20,14 @@ import com.project.goldfish.domain.login.AddUserUseCase
 import com.project.goldfish.domain.login.AddUserUseCaseImpl
 import com.project.goldfish.domain.login.RetrieveUserUseCase
 import com.project.goldfish.domain.login.RetrieveUserUseCaseImpl
+import com.project.goldfish.domain.matches.RetrieveMatchUseCase
+import com.project.goldfish.domain.matches.RetrieveMatchUseCaseImpl
 import com.project.goldfish.network.auth.LoginRepository
 import com.project.goldfish.network.auth.LoginRepositoryImpl
+import com.project.goldfish.network.matches.MatchRepositoryImpl
 import com.project.goldfish.network.friends.FriendRepository
 import com.project.goldfish.network.friends.FriendRepositoryImpl
+import com.project.goldfish.network.matches.MatchRepository
 import com.project.goldfish.network.socket.ChatSocketRepository
 import com.project.goldfish.network.socket.ChatSocketRepositoryImpl
 import com.project.goldfish.network.messages.MessageRepository
@@ -66,6 +70,8 @@ val sharedModule = module {
     singleOf(::SessionManagerImpl).bind<SessionManager>()
     singleOf(::FriendRepositoryImpl).bind<FriendRepository>()
     singleOf(::SearchRepositoryImpl).bind<SearchRepository>()
+    singleOf(::MatchRepositoryImpl).bind<MatchRepository>()
+
     singleOf(::AcceptFriendUseCaseImpl).bind<AcceptFriendUseCase>()
     singleOf(::RetrieveFriendsUseCaseImpl).bind<RetrieveFriendsUseCase>()
     singleOf(::RetrieveRequestedFriendsUseCaseImpl).bind<RetrieveRequestedFriendsUseCase>()
@@ -75,4 +81,5 @@ val sharedModule = module {
     singleOf(::SearchUserUseCaseImpl).bind<SearchUserUseCase>()
     singleOf(::AddUserUseCaseImpl).bind<AddUserUseCase>()
     singleOf(::RetrieveUserUseCaseImpl).bind<RetrieveUserUseCase>()
+    singleOf(::RetrieveMatchUseCaseImpl).bind<RetrieveMatchUseCase>()
 }
