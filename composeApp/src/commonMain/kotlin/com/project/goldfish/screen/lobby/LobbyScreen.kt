@@ -15,12 +15,17 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -59,6 +64,8 @@ private fun LobbyScreen(
     state: LobbyState,
     onEvent: (LobbyEvent) -> Unit,
 ) {
+    var momentTitle by remember { mutableStateOf("") }
+    var momentDescription by remember { mutableStateOf("") }
     Box(
         modifier = Modifier.fillMaxSize().systemBarsPadding().padding(16.dp),
         contentAlignment = Alignment.Center
@@ -82,65 +89,150 @@ private fun LobbyScreen(
                     Spacer(Modifier.height(8.dp))
                 }
                 items(state.friendSearchList) { friend ->
-                    Row(modifier = Modifier.fillMaxWidth().height(50.dp).clip(
-                        RoundedCornerShape(9.dp)).background(Color.Blue).clickable {
-                        onEvent(LobbyEvent.OnAddFriend(friend.id.toString()))
-                    },
-                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                        Text(text = friend.username, color = Color.White, fontWeight = FontWeight.Bold)
+                    Row(
+                        modifier = Modifier.fillMaxWidth().height(50.dp).clip(
+                            RoundedCornerShape(9.dp)
+                        ).background(Color.Blue).clickable {
+                            onEvent(LobbyEvent.OnAddFriend(friend.id.toString()))
+                        },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = friend.username,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                     Spacer(Modifier.height(8.dp))
                 }
 
             }
             Spacer(Modifier.height(8.dp))
-        }
-        LazyColumn {
-            item {
-                Text(text = "Current Match!", color = Color.Red, fontSize = 16.sp)
-                Spacer(Modifier.height(8.dp))
-            }
-            item {
-                Row(modifier = Modifier.fillMaxWidth().height(50.dp).clip(
-                    RoundedCornerShape(9.dp)).background(Color.Red) .clickable {
-                    onEvent(LobbyEvent.OnJoinClick(state.matchedUser?.id.toString()))
+
+            TextField(
+                value = momentTitle,
+                onValueChange = { momentTitle = it },
+                placeholder = {
+                    Text(text = "Moment Title")
                 },
-                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                    Text(text = state.matchedUser?.username ?: "Error!", color = Color.White, fontWeight = FontWeight.Bold)
-                }
-                Spacer(Modifier.height(8.dp))
-            }
-            item {
-                Text(text = "Friends", color = Color.Red, fontSize = 16.sp)
-                Spacer(Modifier.height(8.dp))
-            }
-            items(state.friendList) { friend ->
-                Row(modifier = Modifier.fillMaxWidth().height(50.dp).clip(
-                    RoundedCornerShape(9.dp)).background(Color.Blue) .clickable {
-                    onEvent(LobbyEvent.OnJoinClick(friend.id.toString()))
+                modifier = Modifier.fillMaxWidth()
+            )
+            TextField(
+                value = momentDescription,
+                onValueChange = { momentDescription = it },
+                placeholder = {
+                    Text(text = "Moment Description")
                 },
-                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                    Text(text = friend.username, color = Color.White, fontWeight = FontWeight.Bold)
+                modifier = Modifier.fillMaxWidth()
+            )
+            Button(
+                onClick = {
+                    onEvent.invoke(LobbyEvent.OnInsertMoment(momentTitle, momentDescription))
+                    momentTitle = ""
+                    momentDescription = ""
                 }
-                Spacer(Modifier.height(8.dp))
-
+            ) {
+                Text("Submit Moment!")
             }
-            item {
-                Text(text = "Friends Requests", color = Color.Red, fontSize = 16.sp)
+            LazyColumn {
+                item {
+                    Text(text = "Status Updates!", color = Color.Red, fontSize = 16.sp)
 
-            }
-            items(state.requestedFriendList) { requestedFriend ->
-                Row(modifier = Modifier.fillMaxWidth().height(50.dp).clip(
-                    RoundedCornerShape(9.dp)).background(Color.Green) .clickable {
-                    onEvent(LobbyEvent.OnAcceptFriend(requestedFriend.id.toString()))
-                },
-                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                    Text(text = requestedFriend.username, color = Color.White, fontWeight = FontWeight.Bold)
                 }
-                Spacer(Modifier.height(8.dp))
+
+                items(state.momentList) { moment ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth().height(50.dp).clip(
+                            RoundedCornerShape(9.dp)
+                        ).background(Color.Black).clickable {
+                            onEvent(LobbyEvent.OnJoinClick(state.matchedUser?.user?.id.toString()))
+                        },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(horizontal = 5.dp),
+                            text = "title = ${moment.title}" + "\n" + "desc = ${moment.description}",
+                            color = Color.White
+                        )
+                    }
+                    Spacer(Modifier.height(8.dp))
+                }
+            }
+            LazyColumn {
+                item {
+                    Text(text = "Time Remaining = ${state.remainingTime}", color = Color.Red, fontSize = 16.sp)
+                    Spacer(Modifier.height(5.dp))
+                    Text(text = "Current Match!", color = Color.Red, fontSize = 16.sp)
+                    Spacer(Modifier.height(8.dp))
+                }
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().height(50.dp).clip(
+                            RoundedCornerShape(9.dp)
+                        ).background(Color.Red).clickable {
+                            onEvent(LobbyEvent.OnJoinClick(state.matchedUser?.user?.id.toString()))
+                        },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = state.matchedUser?.user?.username ?: "Error!",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Spacer(Modifier.height(8.dp))
+                }
+                item {
+                    Text(text = "Friends", color = Color.Red, fontSize = 16.sp)
+                    Spacer(Modifier.height(8.dp))
+                }
+                items(state.friendList) { friend ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth().height(50.dp).clip(
+                            RoundedCornerShape(9.dp)
+                        ).background(Color.Blue).clickable {
+                            onEvent(LobbyEvent.OnJoinClick(friend.id.toString()))
+                        },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = friend.username,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Spacer(Modifier.height(8.dp))
+
+                }
+                item {
+                    Text(text = "Friends Requests", color = Color.Red, fontSize = 16.sp)
+
+                }
+                items(state.requestedFriendList) { requestedFriend ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth().height(50.dp).clip(
+                            RoundedCornerShape(9.dp)
+                        ).background(Color.Green).clickable {
+                            onEvent(LobbyEvent.OnAcceptFriend(requestedFriend.id.toString()))
+                        },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = requestedFriend.username,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Spacer(Modifier.height(8.dp))
+
+                }
 
             }
-
         }
     }
 }

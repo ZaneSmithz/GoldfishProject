@@ -22,6 +22,10 @@ import com.project.goldfish.domain.login.RetrieveUserUseCase
 import com.project.goldfish.domain.login.RetrieveUserUseCaseImpl
 import com.project.goldfish.domain.matches.RetrieveMatchUseCase
 import com.project.goldfish.domain.matches.RetrieveMatchUseCaseImpl
+import com.project.goldfish.domain.moments.GetAllMomentsUseCase
+import com.project.goldfish.domain.moments.GetAllMomentsUseCaseImpl
+import com.project.goldfish.domain.moments.InsertMomentUseCase
+import com.project.goldfish.domain.moments.InsertMomentUseCaseImpl
 import com.project.goldfish.network.auth.LoginRepository
 import com.project.goldfish.network.auth.LoginRepositoryImpl
 import com.project.goldfish.network.matches.MatchRepositoryImpl
@@ -32,6 +36,8 @@ import com.project.goldfish.network.socket.ChatSocketRepository
 import com.project.goldfish.network.socket.ChatSocketRepositoryImpl
 import com.project.goldfish.network.messages.MessageRepository
 import com.project.goldfish.network.messages.MessageRepositoryImpl
+import com.project.goldfish.network.moments.MomentRepository
+import com.project.goldfish.network.moments.MomentRepositoryImpl
 import com.project.goldfish.network.rooms.ChatRoomRepository
 import com.project.goldfish.network.rooms.ChatRoomRepositoryImpl
 import com.project.goldfish.network.search.SearchRepository
@@ -71,6 +77,7 @@ val sharedModule = module {
     singleOf(::FriendRepositoryImpl).bind<FriendRepository>()
     singleOf(::SearchRepositoryImpl).bind<SearchRepository>()
     singleOf(::MatchRepositoryImpl).bind<MatchRepository>()
+    singleOf(::MomentRepositoryImpl).bind<MomentRepository>()
 
     singleOf(::AcceptFriendUseCaseImpl).bind<AcceptFriendUseCase>()
     singleOf(::RetrieveFriendsUseCaseImpl).bind<RetrieveFriendsUseCase>()
@@ -82,4 +89,6 @@ val sharedModule = module {
     singleOf(::AddUserUseCaseImpl).bind<AddUserUseCase>()
     singleOf(::RetrieveUserUseCaseImpl).bind<RetrieveUserUseCase>()
     singleOf(::RetrieveMatchUseCaseImpl).bind<RetrieveMatchUseCase>()
+    singleOf(::GetAllMomentsUseCaseImpl).bind<GetAllMomentsUseCase>()
+    singleOf(::InsertMomentUseCaseImpl).bind<InsertMomentUseCase>()
 }

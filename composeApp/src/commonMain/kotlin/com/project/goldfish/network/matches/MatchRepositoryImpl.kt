@@ -1,7 +1,6 @@
 package com.project.goldfish.network.matches
 
-import com.project.goldfish.data.UserDto
-import com.project.goldfish.network.util.executeGetForResponseBody
+import com.project.goldfish.data.MatchedUserDto
 import com.project.goldfish.network.util.executePostForResponseBody
 import com.project.goldfish.util.DataError
 import com.project.goldfish.util.GFResult
@@ -12,10 +11,10 @@ import io.ktor.http.Parameters
 class MatchRepositoryImpl(
     private val client: HttpClient
 ) : MatchRepository {
-    override suspend fun retrieveMatch(firebaseUid: String, userId: String): GFResult<UserDto?, DataError.Network> =
-        client.executePostForResponseBody<UserDto?>(
+    override suspend fun retrieveMatch(firebaseUid: String, userId: String): GFResult<MatchedUserDto?, DataError.Network> =
+        client.executePostForResponseBody<MatchedUserDto?>(
             endpoint = MatchRepository.Endpoints.GetMatch.url,
-            firebaseUid = firebaseUid,
+            firebaseToken = firebaseUid,
             formDataContent = FormDataContent(Parameters.build {
                 append("userId", userId)
             }),

@@ -9,7 +9,7 @@ interface FriendRepository {
     suspend fun retrieveFriends(firebaseUid: String, userId: String): GFResult<List<UserDto>, DataError.Network>
     suspend fun retrieveRequestedFriends(firebaseUid: String, userId: String): GFResult<List<UserDto>, DataError.Network>
     suspend fun addFriend(userId: String, friendId: String, firebaseUid: String):GFResult<String, DataError.Network>
-    suspend fun acceptFriend(userId: String, friendId: String, firebaseUid: String): GFResult<List<UserDto>, DataError.Network>
+    suspend fun acceptFriend(userId: String, friendId: String, firebaseUid: String): GFResult<Unit, DataError.Network>
 
     companion object {
         val BASE_URL = "http://$serverName:8082"

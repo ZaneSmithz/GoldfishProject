@@ -1,4 +1,4 @@
-package com.project.goldfish
+package com.project.goldfish.app
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable

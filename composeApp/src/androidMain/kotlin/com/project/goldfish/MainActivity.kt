@@ -8,6 +8,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.project.goldfish.app.App
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

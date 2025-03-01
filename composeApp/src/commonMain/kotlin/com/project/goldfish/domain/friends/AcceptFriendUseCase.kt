@@ -1,6 +1,5 @@
 package com.project.goldfish.domain.friends
 
-import com.project.goldfish.data.UserDto
 import com.project.goldfish.network.friends.FriendRepository
 import com.project.goldfish.util.DataError
 import com.project.goldfish.util.GFResult
@@ -10,7 +9,7 @@ interface AcceptFriendUseCase {
         userId: String,
         friendId: String,
         firebaseUid: String
-    ): GFResult<List<UserDto>, DataError.Network>
+    ): GFResult<Unit, DataError.Network>
 }
 
 internal class AcceptFriendUseCaseImpl(
@@ -20,6 +19,6 @@ internal class AcceptFriendUseCaseImpl(
         userId: String,
         friendId: String,
         firebaseUid: String
-    ): GFResult<List<UserDto>, DataError.Network> =
+    ): GFResult<Unit, DataError.Network> =
         friendRepository.acceptFriend(userId = userId, firebaseUid = firebaseUid, friendId = friendId)
 }

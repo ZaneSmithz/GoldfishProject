@@ -28,6 +28,6 @@ class LoginRepositoryImpl(
                 append("username", username)
                 append("profilePic", "profile picture")
             }),
-            firebaseUid = firebaseUid
+            firebaseToken = firebaseUid
         )
 }

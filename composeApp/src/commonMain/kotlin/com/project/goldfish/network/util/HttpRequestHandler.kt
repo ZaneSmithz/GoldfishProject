@@ -1,5 +1,6 @@
 package com.project.goldfish.network.util
 
+import com.project.goldfish.logEvent
 import com.project.goldfish.util.DataError
 import com.project.goldfish.util.GFResult
 import io.ktor.client.HttpClient
@@ -17,11 +18,11 @@ import io.ktor.http.contentType
 suspend inline fun <reified T>  HttpClient.executePostForResponseBody(
     endpoint: String,
     formDataContent: FormDataContent?,
-    firebaseUid: String,
+    firebaseToken: String,
 ): GFResult<T, DataError.Network> {
     return try {
         GFResult.Success(this.post(endpoint) {
-            header("Authorization", "Bearer $firebaseUid")
+            header("Authorization", "Bearer $firebaseToken")
             contentType(ContentType.Application.Json)
             setBody(formDataContent)
         }.body<T>())
@@ -32,6 +33,7 @@ suspend inline fun <reified T>  HttpClient.executePostForResponseBody(
     }
     catch (e: Exception) {
         e.printStackTrace()
+        logEvent("EXCEPTION = ${e.message}")
         GFResult.Error(DataError.Network.UNKNOWN)
     }
 }
